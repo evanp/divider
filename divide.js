@@ -17,9 +17,12 @@
 // limitations under the License.
 
 var fs = require("fs"),
+    path = require("path"),
+    crypto = require("crypto"),
     _ = require("underscore"),
     mkdirp = require('mkdirp'),
     async = require("async"),
+    dateFormat = require("dateformat"),
     argv = require("optimist")
         .usage("Usage: $0 -i <filename> -o <root output dir>")
         .demand(["i", "o"])
@@ -31,13 +34,42 @@ var fs = require("fs"),
     input = argv.i,
     output = argv.o;
 
+var toDir = function(dt) {
+    return path.join(output, dateFormat(dt, "yyyy/mm/dd/hh/MM/ss"));
+};
+
+var hash = function(idstr) {
+
+    var h = crypto.createHash('md5'),
+        str, data;
+
+    data = idstr;
+
+    h.update(data);
+    str = h.digest('base64');
+
+    // Make it a little more FS-safe
+
+    str = str.replace(/\+/g, '-');
+    str = str.replace(/\//g, '_');
+    str = str.replace(/=/g, '');
+
+    return str;
+};
+
 var writeActivity = function(activity, callback) {
 
-    var published = Date.parse(activity.published || activity.updated);
-
+    var adate = Date.parse(activity.published || activity.updated),
+        dir = toDir(adate);
+    
     async.waterfall(
         [
             function(callback) {
+                mkdirp(dir, callback);
+            },
+            function(callback) {
+                var fname = path.join(dir, hash(activity.id) + ".json");
+                fs.writeFile(fname, JSON.stringify(activity), {encoding: "utf8"}, callback);
             }
         ],
         callback);
@@ -66,6 +98,9 @@ async.waterfall(
                 }
             };
             _.each(collection.items, function(activity) {
+                wq.push(activity, function(err) {
+                    console.error(err);
+                });
             });
             done = true;
         }
