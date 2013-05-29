@@ -1,0 +1,23 @@
+{
+    "name": "divider",
+    "version": "0.1.0-alpha.1",
+    "dependencies": {
+        "underscore": "1.4.x",
+        "async": "0.2.x",
+        "mkdirp": "0.3.x",
+        "optimist": "0.5.x"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/evanp/divider.git"
+    },
+    "licenses": [
+        {
+            "type": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "engine": {
+        "node": ">=0.8"
+    }
+}
