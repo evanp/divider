@@ -49,8 +49,7 @@ async.waterfall([
         }
     },
     function(value, callback) {
-        process.stdout.setEncoding('utf8');
-        process.stdout.write(JSON.stringify(value, null, 2));
+        process.stdout.write(JSON.stringify(value, null, 2), 'utf8');
     }
 ], function(err) {
     if (err) {
