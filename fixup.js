@@ -73,6 +73,54 @@ var fixupActivity = function(activity) {
     fixupWidthAndHeight(activity);
 };
 
+var safeMove = function(oldName, newName, callback) {
+
+    fs.rename(oldName, newName, function(err) {
+        if (err) {
+            if (err.code == "EXDEV") {
+                slowMove(oldName, newName, callback);
+            } else {
+                callback(err);
+            }
+        } else {
+            callback(null);
+        }
+    });
+};
+
+var slowMove = function(oldName, newName, callback) {
+
+    var rs,
+        ws,
+        onClose = function() {
+            clear();
+            callback(null);
+        },
+        onError = function(err) {
+            clear();
+            callback(err);
+        },
+        clear = function() {
+            rs.removeListener("error", onError);
+            ws.removeListener("error", onError);
+            ws.removeListener("close", onClose);
+        };
+
+    try {
+        rs = fs.createReadStream(oldName);
+        ws = fs.createWriteStream(newName);
+    } catch (err) {
+        callback(err);
+        return;
+    }
+
+    ws.on("close", onClose);
+    rs.on("error", onError);
+    ws.on("error", onError);
+
+    rs.pipe(ws);
+};
+
 async.waterfall(
     [
         function(callback) {
@@ -97,7 +145,7 @@ async.waterfall(
             fs.writeFile(tmpnameOf(input), JSON.stringify(collection), {encoding: "utf8"}, callback);
         },
         function(callback) {
-            fs.rename(tmpnameOf(input), input, callback);
+            safeMove(tmpnameOf(input), input, callback);
         }
     ],
     function(err) {
