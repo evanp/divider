@@ -42,13 +42,15 @@ var thePublic = {
 };
 
 var fixupAddress = function(activity) {
-    if (activity.to) {
-        var colls = _.find(activity.to, function(addr) { return addr.objectType == "collection"; });
-        if (colls.length === 0) {
-            activity.to.push(thePublic);
+    if (activity.verb == "post") {
+        if (activity.to) {
+            var colls = _.find(activity.to, function(addr) { return addr.objectType == "collection"; });
+            if (colls.length === 0) {
+                activity.to.push(thePublic);
+            }
+        } else {
+            activity.to = [thePublic];
         }
-    } else {
-        activity.to = [thePublic];
     }
 };
 
