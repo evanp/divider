@@ -107,6 +107,7 @@ async.waterfall(
     ],
     function(err) {
         if (err) {
+            console.log(input);
             console.error(err);
         } else {
             console.log("OK");
