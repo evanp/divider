@@ -96,7 +96,7 @@ var slowMove = function(oldName, newName, callback) {
         ws,
         onClose = function() {
             clear();
-            callback(null);
+            fs.unlink(oldName, callback);
         },
         onError = function(err) {
             clear();
@@ -147,7 +147,7 @@ async.waterfall(
             fs.writeFile(tmpnameOf(input), JSON.stringify(collection), {encoding: "utf8"}, callback);
         },
         function(callback) {
-            safeMove(tmpnameOf(input), input, callback);
+            Move(tmpnameOf(input), input, callback);
         }
     ],
     function(err) {
