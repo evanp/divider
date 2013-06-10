@@ -75,21 +75,6 @@ var fixupActivity = function(activity) {
     fixupWidthAndHeight(activity);
 };
 
-var safeMove = function(oldName, newName, callback) {
-
-    fs.rename(oldName, newName, function(err) {
-        if (err) {
-            if (err.code == "EXDEV") {
-                slowMove(oldName, newName, callback);
-            } else {
-                callback(err);
-            }
-        } else {
-            callback(null);
-        }
-    });
-};
-
 var slowMove = function(oldName, newName, callback) {
 
     var rs,
@@ -147,7 +132,7 @@ async.waterfall(
             fs.writeFile(tmpnameOf(input), JSON.stringify(collection), {encoding: "utf8"}, callback);
         },
         function(callback) {
-            Move(tmpnameOf(input), input, callback);
+            slowMove(tmpnameOf(input), input, callback);
         }
     ],
     function(err) {
