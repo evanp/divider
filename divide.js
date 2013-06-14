@@ -68,8 +68,9 @@ var writeActivity = function(activity, callback) {
                 mkdirp(dir, callback);
             },
             function(made, callback) {
-                var fname = path.join(dir, hash(activity.id) + ".json");
-                fs.writeFile(fname, JSON.stringify(activity), callback);
+                var contents = JSON.stringify(activity),
+                    fname = path.join(dir, hash(contents.id) + ".json");
+                fs.writeFile(fname, contents, callback);
             }
         ], callback);
 };
