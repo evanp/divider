@@ -24,14 +24,12 @@ var fs = require("fs"),
     async = require("async"),
     dateFormat = require("dateformat"),
     argv = require("optimist")
-        .usage("Usage: $0 -i <filename> -o <root output dir>")
-        .demand(["i", "o"])
+        .usage("Usage: $0 -o <root output dir> <filename1> <filename2> ...")
+        .demand(["o"])
         .alias("o", "output")
-        .alias("i", "input")
-        .describe("i", "Input file in Activity Streams JSON format")
         .describe("o", "Output directory")
+        .check(function(argv) { return argv._ && argv._.length > 0; })
         .argv,
-    input = argv.i,
     output = argv.o;
 
 var toDir = function(dt) {
@@ -75,30 +73,34 @@ var writeActivity = function(activity, callback) {
         ], callback);
 };
 
-async.waterfall(
-    [
-        function(callback) {
-            fs.readFile(input, {encoding: "utf8"}, callback);
-        },
-        function(data, callback) {
-            var collection;
-            try {
-                collection = JSON.parse(data);
-                callback(null, collection);
-            } catch (err) {
-                callback(err, null);
+var divideCollection = function(input, callback) {
+    async.waterfall(
+        [
+            function(callback) {
+                fs.readFile(input, {encoding: "utf8"}, callback);
+            },
+            function(data, callback) {
+                var collection;
+                try {
+                    collection = JSON.parse(data);
+                    callback(null, collection);
+                } catch (err) {
+                    callback(err, null);
+                }
+            },
+            function(collection, callback) {
+                async.eachLimit(collection.items, 64, writeActivity, callback);
             }
-        },
-        function(collection, callback) {
-            async.eachLimit(collection.items, 64, writeActivity, callback);
-        }
-    ],
-    function(err) {
-        if (err) {
-            console.log(input);
-            console.error(err);
-        } else {
-            console.log("OK");
-        }
+        ],
+        callback);
+};
+
+async.eachLimit(argv._, 8, divideCollection, function(err) {
+    if (err) {
+        console.error(err);
+        process.exit(-1);
+    } else {
+        console.log("OK");
+        process.exit(0);
     }
-);
+});
