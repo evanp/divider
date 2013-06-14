@@ -95,17 +95,22 @@ async.waterfall(
                 finished = 0,
                 todo = collection.items.length;
 
+            console.log({todo: todo});
+
             wq.drain = function() {
                 if (finished >= todo) {
                     callback(null);
                 }
             };
+
             wq.push(collection.items, function(err) {
                 finished++;
                 if (err) {
                     console.error(err);
                 }
             });
+            
+            console.log({queueLength: wq.length()});
         }
     ],
     function(err) {
