@@ -91,11 +91,17 @@ async.waterfall(
             }
         },
         function(collection, callback) {
-            var wq = async.queue(writeActivity, 32);
+            var wq = async.queue(writeActivity, 32),
+                finished = 0,
+                todo = collection.items.length;
+
             wq.drain = function() {
-                callback(null);
+                if (finished >= todo) {
+                    callback(null);
+                }
             };
             wq.push(collection.items, function(err) {
+                finished++;
                 if (err) {
                     console.error(err);
                 }
