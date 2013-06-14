@@ -90,19 +90,15 @@ async.waterfall(
             }
         },
         function(collection, callback) {
-            var done = false,
-                wq = async.queue(writeActivity, 512);
+            var wq = async.queue(writeActivity, 512);
             wq.drain = function() {
-                if (done) {
-                    callback(null);
-                }
+                callback(null);
             };
-            _.each(collection.items, function(activity) {
-                wq.push(activity, function(err) {
+            wq.push(collection.items, function(err) {
+                if (err) {
                     console.error(err);
-                });
+                }
             });
-            done = true;
         }
     ],
     function(err) {
@@ -114,4 +110,3 @@ async.waterfall(
         }
     }
 );
-                
