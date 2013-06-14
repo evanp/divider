@@ -91,7 +91,7 @@ async.waterfall(
             }
         },
         function(collection, callback) {
-            var wq = async.queue(writeActivity, 512);
+            var wq = async.queue(writeActivity, 32);
             wq.drain = function() {
                 callback(null);
             };
