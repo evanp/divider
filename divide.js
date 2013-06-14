@@ -69,7 +69,7 @@ var writeActivity = function(activity, callback) {
             },
             function(made, callback) {
                 var contents = JSON.stringify(activity),
-                    fname = path.join(dir, hash(contents.id) + ".json");
+                    fname = path.join(dir, hash(contents) + ".json");
                 fs.writeFile(fname, contents, callback);
             }
         ], callback);
