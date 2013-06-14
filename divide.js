@@ -61,19 +61,17 @@ var writeActivity = function(activity, callback) {
 
     var adate = Date.parse(activity.published || activity.updated),
         dir = toDir(adate);
-    
+
     async.waterfall(
         [
             function(callback) {
                 mkdirp(dir, callback);
             },
-            function(callback) {
+            function(made, callback) {
                 var fname = path.join(dir, hash(activity.id) + ".json");
-                console.dir({activity: activity.id, fname: fname});
-                fs.writeFile(fname, JSON.stringify(activity), {encoding: "utf8"}, callback);
+                fs.writeFile(fname, JSON.stringify(activity), callback);
             }
-        ],
-        callback);
+        ], callback);
 };
 
 async.waterfall(
@@ -91,26 +89,7 @@ async.waterfall(
             }
         },
         function(collection, callback) {
-            var wq = async.queue(writeActivity, 32),
-                finished = 0,
-                todo = collection.items.length;
-
-            console.log({todo: todo});
-
-            wq.drain = function() {
-                if (finished >= todo) {
-                    callback(null);
-                }
-            };
-
-            wq.push(collection.items, function(err) {
-                finished++;
-                if (err) {
-                    console.error(err);
-                }
-            });
-            
-            console.log({queueLength: wq.length()});
+            async.eachLimit(collection.items, 64, writeActivity, callback);
         }
     ],
     function(err) {
