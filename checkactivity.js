@@ -40,7 +40,7 @@ var walk = function(fname, onFile, callback) {
                     function(files, callback) {
                         files = files.sort();
                         async.eachLimit(files,
-                                        512,
+                                        128,
                                         function(rel, callback) {
                                             walk(path.join(fname, rel), onFile, callback);
                                         },
