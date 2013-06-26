@@ -73,6 +73,10 @@ assert.isNumber = function(obj, msg) {
     assert.ok(_.isNumber(obj), msg);
 };
 
+assert.isArray = function(obj, msg) {
+    assert.ok(_.isArray(obj), msg);
+};
+
 var validDate = function(dt, name) {
     assert.isString(dt, name + " must be a string");
 };
