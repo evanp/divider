@@ -39,8 +39,7 @@ var walk = function(fname, onFile, callback) {
                     },
                     function(files, callback) {
                         files = files.sort();
-                        async.eachLimit(files,
-                                        128,
+                        async.eachSeries(files,
                                         function(rel, callback) {
                                             walk(path.join(fname, rel), onFile, callback);
                                         },
