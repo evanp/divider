@@ -39,11 +39,12 @@ var walk = function(fname, onFile, callback) {
                     },
                     function(files, callback) {
                         files = files.sort();
-                        async.eachSeries(files,
-                                         function(rel, callback) {
-                                             walk(path.join(fname, rel), onFile, callback);
-                                         },
-                                         callback);
+                        async.eachLimit(files,
+                                        512,
+                                        function(rel, callback) {
+                                            walk(path.join(fname, rel), onFile, callback);
+                                        },
+                                        callback);
                     }
                 ], callback);
             } else {
