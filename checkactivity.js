@@ -205,17 +205,17 @@ var validActivityObject = function(obj, name) {
 };
 
 var validMediaLink = function(ml, name) {
-    assert.isObject(ml);
-    assert.include(ml, "url");
-    assert.isString(ml.url);
+    assert.isObject(ml, name + " must be an object");
+    assert.include(ml, "url", name + " must have an URL.");
+    assert.isString(ml.url, name + ".url must be a string");
     if (_.has(ml, "width")) {
-        assert.isNumber(ml.width);
+        assert.isNumber(ml.width, name + ".width must be a number");
     }
     if (_.has(ml, "height")) {
-        assert.isNumber(ml.height);
+        assert.isNumber(ml.height, name + ".height must be a number");
     }
     if (_.has(ml, "duration")) {
-        assert.isNumber(ml.duration);
+        assert.isNumber(ml.duration, name + ".duration must be a number");
     }
 };
 
