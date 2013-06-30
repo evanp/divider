@@ -27,7 +27,11 @@ var fs = require("fs"),
         .usage("Usage: $0 -o <root output dir> <filename1> <filename2> ...")
         .demand(["o"])
         .alias("o", "output")
+        .alias("v", "verb")
+        .alias("t", "type")
         .describe("o", "Output directory")
+        .describe("v", "Only get this verb (default: all verbs)")
+        .describe("t", "Only for this object objectType (default: all types)")
         .check(function(argv) { return argv._ && argv._.length > 0; })
         .argv,
     output = argv.o;
@@ -59,6 +63,18 @@ var writeActivity = function(activity, callback) {
 
     var adate = Date.parse(activity.published || activity.updated),
         dir = toDir(adate);
+
+    // Filter by verb and/or type
+
+    if (argv.v && activity.verb != argv.v) {
+        callback(null);
+        return;
+    }
+
+    if (argv.t && activity.object && activity.object.objectType != argv.t) {
+        callback(null);
+        return;
+    }
 
     async.waterfall(
         [
