@@ -16,7 +16,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var fs = require("fs"),
+var ignored = require("set-immediate"),
+    fs = require("fs"),
     path = require("path"),
     crypto = require("crypto"),
     _ = require("underscore"),
@@ -67,12 +68,16 @@ var writeActivity = function(activity, callback) {
     // Filter by verb and/or type
 
     if (argv.v && activity.verb != argv.v) {
-        callback(null);
+        setImmediate(function() {
+            callback(null);
+        });
         return;
     }
 
     if (argv.t && activity.object && activity.object.objectType != argv.t) {
-        callback(null);
+        setImmediate(function() {
+            callback(null);
+        });
         return;
     }
 
