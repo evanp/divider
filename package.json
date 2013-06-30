@@ -6,7 +6,8 @@
         "async": "0.2.x",
         "mkdirp": "0.3.x",
         "optimist": "0.5.x",
-        "dateformat": "1.0.x"
+        "dateformat": "1.0.x",
+        "set-immediate": "0.1.x"
     },
     "repository": {
         "type": "git",
