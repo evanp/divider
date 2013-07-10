@@ -38,7 +38,7 @@ var ignored = require("set-immediate"),
     output = argv.o;
 
 var toDir = function(dt) {
-    return path.join(output, dateFormat(dt, "yyyy/mm/dd/hh/MM/ss"));
+    return path.join(output, dateFormat(dt, "yyyy/mm/dd/HH/MM/ss"));
 };
 
 var hash = function(idstr) {
